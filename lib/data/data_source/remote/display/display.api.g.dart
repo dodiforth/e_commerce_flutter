@@ -12,11 +12,14 @@ class _DisplayApi implements DisplayApi {
   _DisplayApi(
     this._dio, {
     this.baseUrl,
+    this.errorLogger,
   });
 
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 
   @override
   Future<ResponseWrapper<List<MenuDto>>> getMenusByMallType(
@@ -25,31 +28,38 @@ class _DisplayApi implements DisplayApi {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ResponseWrapper<List<MenuDto>>>(Options(
+    final _options = _setStreamType<ResponseWrapper<List<MenuDto>>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              '/api/menus/${mallType}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final _value = ResponseWrapper<List<MenuDto>>.fromJson(
-      _result.data!,
-      (json) => json is List<dynamic>
-          ? json
-              .map<MenuDto>((i) => MenuDto.fromJson(i as Map<String, dynamic>))
-              .toList()
-          : List.empty(),
-    );
+        .compose(
+          _dio.options,
+          '/api/menus/${mallType}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ResponseWrapper<List<MenuDto>> _value;
+    try {
+      _value = ResponseWrapper<List<MenuDto>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json
+                .map<MenuDto>(
+                    (i) => MenuDto.fromJson(i as Map<String, dynamic>))
+                .toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
     return _value;
   }
 

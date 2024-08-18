@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 
+import '../../../../core/constant.dart';
 import '../../../../core/theme/constant/app_icons.dart';
 import '../../../../core/theme/custom/custom_app_bar.dart';
 import '../../../../core/theme/custom/custom_font_weight.dart';

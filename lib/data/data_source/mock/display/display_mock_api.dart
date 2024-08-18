@@ -11,9 +11,9 @@ class DisplayMockApi implements DisplayApi {
   Future<ResponseWrapper<List<MenuDto>>> getMenusByMallType(String mallType) {
     return Future(
       () => ResponseWrapper(
-        status: 'SUCCESS',
-        code: '0000',
-        message: '',
+        status: 'SUCCESS', //fail / SUCCESS -> Change to fail if want to test
+        code: '0000', //GNB-0000 / 0000 -> Change to GNB-0000 if want to test
+        message: '', //service error has occurred / '' -> Change to 'service error has occurred' if want to test
         data: menuParser(mallType == 'market'
             ? DisplayMockData.menusByMarket
             : DisplayMockData.menusByBeauty),
